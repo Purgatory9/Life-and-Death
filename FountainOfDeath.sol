@@ -1,9 +1,10 @@
-// File: contracts/Math.sol
 pragma solidity ^0.5.16;
 
+// File: contracts/Math.sol
 /**
  * @dev Standard math utilities missing in the Solidity language.
  */
+ 
 library Math {
     /**
      * @dev Returns the largest of two numbers.
@@ -30,9 +31,6 @@ library Math {
 }
 
 // File: contracts/SafeMath.sol
-
-pragma solidity ^0.5.16;
-
 /**
  * @dev Wrappers over Solidity's arithmetic operations with added overflow
  * checks.
@@ -141,9 +139,6 @@ library SafeMath {
 
 // File: contracts/interfaces/IERC20.sol
 
-pragma solidity ^0.5.16;
-
-
 interface IERC20 {
     // ERC20 Optional Views
     function name() external view returns (string memory);
@@ -177,9 +172,6 @@ interface IERC20 {
 }
 
 // File: contracts/ERC20Detailed.sol
-
-pragma solidity ^0.5.16;
-
 
 /**
  * @dev Optional functions from the ERC20 standard.
@@ -234,8 +226,6 @@ contract ERC20Detailed is IERC20 {
 
 // File: contracts/Address.sol
 
-pragma solidity ^0.5.16;
-
 /**
  * @dev Collection of functions related to the address type,
  */
@@ -263,9 +253,6 @@ library Address {
 }
 
 // File: contracts/SafeERC20.sol
-
-pragma solidity ^0.5.16;
-
 
 /**
  * @title SafeERC20
@@ -339,8 +326,6 @@ library SafeERC20 {
 
 // File: contracts/ReentrancyGuard.sol
 
-pragma solidity ^0.5.16;
-
 /**
  * @dev Contract module that helps prevent reentrant calls to a function.
  *
@@ -380,9 +365,6 @@ contract ReentrancyGuard {
 
 // File: contracts/interfaces/IStakingRewards.sol
 
-pragma solidity ^0.5.16;
-
-
 interface IStakingRewards {
     // Views
     function lastTimeRewardApplicable() external view returns (uint256);
@@ -409,9 +391,6 @@ interface IStakingRewards {
 }
 
 // File: contracts/Owned.sol
-
-pragma solidity ^0.5.16;
-
 
 // https://docs.synthetix.io/contracts/Owned
 contract Owned {
@@ -447,12 +426,6 @@ contract Owned {
 
 // File: contracts/RewardsDistributionRecipient.sol
 
-pragma solidity ^0.5.16;
-
-// Inheritance
-
-
-
 // https://docs.synthetix.io/contracts/RewardsDistributionRecipient
 contract RewardsDistributionRecipient is Owned {
     address public rewardsDistribution;
@@ -470,12 +443,6 @@ contract RewardsDistributionRecipient is Owned {
 }
 
 // File: contracts/Pausable.sol
-
-pragma solidity ^0.5.16;
-
-// Inheritance
-
-
 
 // https://docs.synthetix.io/contracts/Pausable
 contract Pausable is Owned {
@@ -519,8 +486,6 @@ contract Pausable is Owned {
 }
 
 // File: contracts/FountainOfDeath.sol
-
-pragma solidity ^0.5.16;
 
 contract FountainOfDeath is IStakingRewards, RewardsDistributionRecipient, ReentrancyGuard, Pausable {
     using SafeMath for uint256;
