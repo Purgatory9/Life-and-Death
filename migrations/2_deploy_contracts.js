@@ -1,5 +1,5 @@
-const Migrations = artifacts.require("FountainOfDeath");
+const FountainOfDeath = artifacts.require("FountainOfDeath");
 
 module.exports = function(deployer) {
-  deployer.deploy(Migrations);
+  deployer.deploy(FountainOfDeath);
 };
