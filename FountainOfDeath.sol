@@ -508,8 +508,8 @@ contract FountainOfDeath is IStakingRewards, RewardsDistributionRecipient, Reent
     IERC20 public rewardsToken;
     IERC20 public stakingToken;
     uint256 public periodFinish = 0;
-    uint256 public rewardRate = 0;          //change
-    uint256 public rewardsDuration = 3 days;    //edited to 3 days.
+    uint256 public rewardRate = 0;         
+    uint256 public rewardsDuration = 3 days;    //Edited to 3 days.
     uint256 public lastUpdateTime;
     uint256 public rewardPerTokenStored;
 
