@@ -509,7 +509,7 @@ contract FountainOfDeath is IStakingRewards, RewardsDistributionRecipient, Reent
     IERC20 public stakingToken;
     uint256 public periodFinish = 0;
     uint256 public rewardRate = 0;         
-    uint256 public rewardsDuration = 14 days;    //Edited to 14 days.
+    uint256 public rewardsDuration = 3 days;    //Edited to 3 days.
     uint256 public lastUpdateTime;
     uint256 public rewardPerTokenStored;
 
@@ -619,19 +619,6 @@ contract FountainOfDeath is IStakingRewards, RewardsDistributionRecipient, Reent
         emit RewardAdded(reward);
     }
 
-    // Added to support recovering LP Rewards from other systems to be distributed to holders
-    function recoverERC20(address tokenAddress, uint256 tokenAmount) external onlyOwner {
-        // If it's SNX we have to query the token symbol to ensure its not a proxy or underlying
-        bool isSNX = (keccak256(bytes("SNX")) == keccak256(bytes(ERC20Detailed(tokenAddress).symbol())));
-        // Cannot recover the staking token or the rewards token
-        require(
-            tokenAddress != address(stakingToken) && tokenAddress != address(rewardsToken) && !isSNX,
-            "Cannot withdraw the staking or rewards tokens"
-        );
-        IERC20(tokenAddress).safeTransfer(owner, tokenAmount);
-        emit Recovered(tokenAddress, tokenAmount);
-    }
-
     function setRewardsDuration(uint256 _rewardsDuration) external onlyOwner {
         require(
             periodFinish == 0 || block.timestamp > periodFinish,
@@ -639,6 +626,13 @@ contract FountainOfDeath is IStakingRewards, RewardsDistributionRecipient, Reent
         );
         rewardsDuration = _rewardsDuration;
         emit RewardsDurationUpdated(rewardsDuration);
+    }
+    
+    //Function added that allows GOD to claim remaining DEATH tokens after the Game of Life & Death has finished fully (14 Days)
+    function claimRemainingDeath(uint256 amount) external onlyOwner {
+        require(now >= periodFinish + 11 days, "Cannot claim remaining DEATH tokens before the Game of Life & Death is fully completed.");
+        require(periodFinish != 0, "Cannot claim DEATH tokens before the game has started.");
+        rewardsToken.safeTransfer(msg.sender, amount);
     }
 
     /* ========== MODIFIERS ========== */
