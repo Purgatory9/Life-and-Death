@@ -9,33 +9,18 @@
   ░ ░    ▒ ░ ░ ░       ░        ░   ▒      ░   ░ ░  ░ ░  ░     ░ ░  ░    ░     ░   ▒     ░       ░  ░░ ░
     ░  ░ ░             ░  ░         ░  ░         ░    ░          ░       ░  ░      ░  ░          ░  ░  ░
 */
+
 pragma solidity ^0.5.16;
 
-
-// File: contracts/Math.sol
-
-/**
- * @dev Standard math utilities missing in the Solidity language.
- */
 library Math {
-    /**
-     * @dev Returns the largest of two numbers.
-     */
     function max(uint256 a, uint256 b) internal pure returns (uint256) {
         return a >= b ? a : b;
     }
 
-    /**
-     * @dev Returns the smallest of two numbers.
-     */
     function min(uint256 a, uint256 b) internal pure returns (uint256) {
         return a < b ? a : b;
     }
 
-    /**
-     * @dev Returns the average of two numbers. The result is rounded towards
-     * zero.
-     */
     function average(uint256 a, uint256 b) internal pure returns (uint256) {
         // (a + b) / 2 can overflow, so we distribute
         return (a / 2) + (b / 2) + ((a % 2 + b % 2) / 2);
@@ -44,29 +29,7 @@ library Math {
 
 // File: contracts/SafeMath.sol
 
-/**
- * @dev Wrappers over Solidity's arithmetic operations with added overflow
- * checks.
- *
- * Arithmetic operations in Solidity wrap on overflow. This can easily result
- * in bugs, because programmers usually assume that an overflow raises an
- * error, which is the standard behavior in high level programming languages.
- * `SafeMath` restores this intuition by reverting the transaction when an
- * operation overflows.
- *
- * Using this library instead of the unchecked operations eliminates an entire
- * class of bugs, so it's recommended to use it always.
- */
 library SafeMath {
-    /**
-     * @dev Returns the addition of two unsigned integers, reverting on
-     * overflow.
-     *
-     * Counterpart to Solidity's `+` operator.
-     *
-     * Requirements:
-     * - Addition cannot overflow.
-     */
     function add(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
         require(c >= a, "SafeMath: addition overflow");
@@ -74,15 +37,6 @@ library SafeMath {
         return c;
     }
 
-    /**
-     * @dev Returns the subtraction of two unsigned integers, reverting on
-     * overflow (when the result is negative).
-     *
-     * Counterpart to Solidity's `-` operator.
-     *
-     * Requirements:
-     * - Subtraction cannot overflow.
-     */
     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
         require(b <= a, "SafeMath: subtraction overflow");
         uint256 c = a - b;
@@ -90,15 +44,6 @@ library SafeMath {
         return c;
     }
 
-    /**
-     * @dev Returns the multiplication of two unsigned integers, reverting on
-     * overflow.
-     *
-     * Counterpart to Solidity's `*` operator.
-     *
-     * Requirements:
-     * - Multiplication cannot overflow.
-     */
     function mul(uint256 a, uint256 b) internal pure returns (uint256) {
         // Gas optimization: this is cheaper than requiring 'a' not being zero, but the
         // benefit is lost if 'b' is also tested.
@@ -113,17 +58,6 @@ library SafeMath {
         return c;
     }
 
-    /**
-     * @dev Returns the integer division of two unsigned integers. Reverts on
-     * division by zero. The result is rounded towards zero.
-     *
-     * Counterpart to Solidity's `/` operator. Note: this function uses a
-     * `revert` opcode (which leaves remaining gas untouched) while Solidity
-     * uses an invalid opcode to revert (consuming all remaining gas).
-     *
-     * Requirements:
-     * - The divisor cannot be zero.
-     */
     function div(uint256 a, uint256 b) internal pure returns (uint256) {
         // Solidity only automatically asserts when dividing by 0
         require(b > 0, "SafeMath: division by zero");
@@ -133,17 +67,6 @@ library SafeMath {
         return c;
     }
 
-    /**
-     * @dev Returns the remainder of dividing two unsigned integers. (unsigned integer modulo),
-     * Reverts when dividing by zero.
-     *
-     * Counterpart to Solidity's `%` operator. This function uses a `revert`
-     * opcode (which leaves remaining gas untouched) while Solidity uses an
-     * invalid opcode to revert (consuming all remaining gas).
-     *
-     * Requirements:
-     * - The divisor cannot be zero.
-     */
     function mod(uint256 a, uint256 b) internal pure returns (uint256) {
         require(b != 0, "SafeMath: modulo by zero");
         return a % b;
@@ -166,7 +89,11 @@ interface IERC20 {
     // Mutative functions
     function transfer(address to, uint value) external returns (bool);
     function approve(address spender, uint value) external returns (bool);
-    function transferFrom(address from, address to, uint value) external returns (bool);
+    function transferFrom(
+        address from,
+        address to,
+        uint value
+    ) external returns (bool);
 
     // Events
     event Transfer(address indexed from, address indexed to, uint value);
@@ -175,19 +102,11 @@ interface IERC20 {
 
 // File: contracts/ERC20Detailed.sol
 
-/**
- * @dev Optional functions from the ERC20 standard.
- */
 contract ERC20Detailed is IERC20 {
     string private _name;
     string private _symbol;
     uint8 private _decimals;
 
-    /**
-     * @dev Sets the values for `name`, `symbol`, and `decimals`. All three of
-     * these values are immutable: they can only be set once during
-     * construction.
-     */
     constructor (string memory name, string memory symbol, uint8 decimals) public {
         _name = name;
         _symbol = symbol;
@@ -209,9 +128,6 @@ contract ERC20Detailed is IERC20 {
 
 // File: contracts/Address.sol
 
-/**
- * @dev Collection of functions related to the address type,
- */
 library Address {
     /**
      * @dev Returns true if `account` is a contract.
@@ -237,15 +153,6 @@ library Address {
 
 // File: contracts/SafeERC20.sol
 
-/**
- * @title SafeERC20
- * @dev Wrappers around ERC20 operations that throw on failure (when the token
- * contract returns false). Tokens that return no value (and instead revert or
- * throw on failure) are also supported, non-reverting calls are assumed to be
- * successful.
- * To use this library you can add a `using SafeERC20 for ERC20;` statement to your contract,
- * which allows you to call the safe operations as `token.safeTransfer(...)`, etc.
- */
 library SafeERC20 {
     using SafeMath for uint256;
     using Address for address;
@@ -349,6 +256,7 @@ contract ReentrancyGuard {
 // File: contracts/interfaces/IStakingRewards.sol
 
 interface IStakingRewards {
+    
     // Views
     function lastTimeRewardApplicable() external view returns (uint256);
     function rewardPerToken() external view returns (uint256);
@@ -457,7 +365,8 @@ contract Pausable is Owned {
 }
 
 // File: contracts/FountainOfDeath.sol
-contract FountainOfDeath is IStakingRewards, RewardsDistributionRecipient, ReentrancyGuard, Pausable {
+
+contract FountainOfDeathFLAT is IStakingRewards, RewardsDistributionRecipient, ReentrancyGuard, Pausable {
     using SafeMath for uint256;
     using SafeERC20 for IERC20;
 
@@ -466,8 +375,8 @@ contract FountainOfDeath is IStakingRewards, RewardsDistributionRecipient, Reent
     IERC20 public rewardsToken;
     IERC20 public stakingToken;
     uint256 public periodFinish = 0;
-    uint256 public rewardRate = 0;
-    uint256 public rewardsDuration = 3 days;    //edited to 3 Days
+    uint256 public rewardRate = 0;          
+    uint256 public rewardsDuration = 3 days;
     uint256 public lastUpdateTime;
     uint256 public rewardPerTokenStored;
 
@@ -521,16 +430,16 @@ contract FountainOfDeath is IStakingRewards, RewardsDistributionRecipient, Reent
     function getRewardForDuration() external view returns (uint256) {
         return rewardRate.mul(rewardsDuration);
     }
-
-    function getUNIV2Balance() public view returns(uint) {
-        IERC20 token = IERC20(stakingToken);
-        return token.balanceOf(msg.sender);
+    
+    function getUNIV2Balance(address useraddress) public view returns(uint) {
+        IERC20 token = IERC20(stakingToken); 
+        return token.balanceOf(useraddress);
     }
-
-    function getDEATHBalance() public view returns(uint) {
-        IERC20 token = IERC20(rewardsToken);
-        return token.balanceOf(msg.sender);
-    }
+    
+    function getDEATHBalance(address useraddress) public view returns(uint) {
+        IERC20 token = IERC20(rewardsToken); 
+        return token.balanceOf(useraddress);
+    }    
 
     /* ========== MUTATIVE FUNCTIONS ========== */
 
@@ -609,9 +518,9 @@ contract FountainOfDeath is IStakingRewards, RewardsDistributionRecipient, Reent
         emit RewardsDurationUpdated(rewardsDuration);
     }
 
-    //Function added that allows GOD to claim remaining DEATH tokens after the Game of Life & Death has finished fully (14 Days).
+    //Function added that allows GOD to claim remaining DEATH tokens after the Game of Life & Death has finished fully (4 Days).
     function claimRemainingTokens(uint256 amount) external onlyOwner {
-        require(now >= periodFinish + 11 days, "Cannot claim remaining DEATH tokens before the Game of Life & Death is fully completed.");
+        require(now >= periodFinish + 1 days, "Cannot claim remaining DEATH tokens before the Game of Life & Death is fully completed.");
         require(periodFinish != 0, "Cannot claim DEATH tokens before the game has started.");
         rewardsToken.safeTransfer(msg.sender, amount);
     }
