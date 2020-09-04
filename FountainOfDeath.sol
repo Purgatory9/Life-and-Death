@@ -9,14 +9,14 @@
   ░ ░    ▒ ░ ░ ░       ░        ░   ▒      ░   ░ ░  ░ ░  ░     ░ ░  ░    ░     ░   ▒     ░       ░  ░░ ░
     ░  ░ ░             ░  ░         ░  ░         ░    ░          ░       ░  ░      ░  ░          ░  ░  ░
 */
-
 pragma solidity ^0.5.16;
 
+
 // File: contracts/Math.sol
+
 /**
  * @dev Standard math utilities missing in the Solidity language.
  */
- 
 library Math {
     /**
      * @dev Returns the largest of two numbers.
@@ -43,6 +43,7 @@ library Math {
 }
 
 // File: contracts/SafeMath.sol
+
 /**
  * @dev Wrappers over Solidity's arithmetic operations with added overflow
  * checks.
@@ -154,32 +155,21 @@ library SafeMath {
 interface IERC20 {
     // ERC20 Optional Views
     function name() external view returns (string memory);
-
     function symbol() external view returns (string memory);
-
     function decimals() external view returns (uint8);
 
     // Views
     function totalSupply() external view returns (uint);
-
     function balanceOf(address owner) external view returns (uint);
-
     function allowance(address owner, address spender) external view returns (uint);
 
     // Mutative functions
     function transfer(address to, uint value) external returns (bool);
-
     function approve(address spender, uint value) external returns (bool);
-
-    function transferFrom(
-        address from,
-        address to,
-        uint value
-    ) external returns (bool);
+    function transferFrom(address from, address to, uint value) external returns (bool);
 
     // Events
     event Transfer(address indexed from, address indexed to, uint value);
-
     event Approval(address indexed owner, address indexed spender, uint value);
 }
 
@@ -204,33 +194,14 @@ contract ERC20Detailed is IERC20 {
         _decimals = decimals;
     }
 
-    /**
-     * @dev Returns the name of the token.
-     */
     function name() public view returns (string memory) {
         return _name;
     }
 
-    /**
-     * @dev Returns the symbol of the token, usually a shorter version of the
-     * name.
-     */
     function symbol() public view returns (string memory) {
         return _symbol;
     }
 
-    /**
-     * @dev Returns the number of decimals used to get its user representation.
-     * For example, if `decimals` equals `2`, a balance of `505` tokens should
-     * be displayed to a user as `5,05` (`505 / 10 ** 2`).
-     *
-     * Tokens usually opt for a value of 18, imitating the relationship between
-     * Ether and Wei.
-     *
-     * > Note that this information is only used for _display_ purposes: it in
-     * no way affects any of the arithmetic of the contract, including
-     * `IERC20.balanceOf` and `IERC20.transfer`.
-     */
     function decimals() public view returns (uint8) {
         return _decimals;
     }
@@ -380,30 +351,20 @@ contract ReentrancyGuard {
 interface IStakingRewards {
     // Views
     function lastTimeRewardApplicable() external view returns (uint256);
-
     function rewardPerToken() external view returns (uint256);
-
     function earned(address account) external view returns (uint256);
-
     function getRewardForDuration() external view returns (uint256);
-
     function totalSupply() external view returns (uint256);
-
     function balanceOf(address account) external view returns (uint256);
 
     // Mutative
-
     function stake(uint256 amount) external;
-
     function withdraw(uint256 amount) external;
-
     function getReward() external;
-
     function exit() external;
 }
 
 // File: contracts/Owned.sol
-
 // https://docs.synthetix.io/contracts/Owned
 contract Owned {
     address public owner;
@@ -437,7 +398,6 @@ contract Owned {
 }
 
 // File: contracts/RewardsDistributionRecipient.sol
-
 // https://docs.synthetix.io/contracts/RewardsDistributionRecipient
 contract RewardsDistributionRecipient is Owned {
     address public rewardsDistribution;
@@ -455,7 +415,6 @@ contract RewardsDistributionRecipient is Owned {
 }
 
 // File: contracts/Pausable.sol
-
 // https://docs.synthetix.io/contracts/Pausable
 contract Pausable is Owned {
     uint public lastPauseTime;
@@ -498,7 +457,6 @@ contract Pausable is Owned {
 }
 
 // File: contracts/FountainOfDeath.sol
-
 contract FountainOfDeath is IStakingRewards, RewardsDistributionRecipient, ReentrancyGuard, Pausable {
     using SafeMath for uint256;
     using SafeERC20 for IERC20;
@@ -508,8 +466,8 @@ contract FountainOfDeath is IStakingRewards, RewardsDistributionRecipient, Reent
     IERC20 public rewardsToken;
     IERC20 public stakingToken;
     uint256 public periodFinish = 0;
-    uint256 public rewardRate = 0;         
-    uint256 public rewardsDuration = 3 days;    //Edited to 3 days.
+    uint256 public rewardRate = 0;
+    uint256 public rewardsDuration = 3 days;    //edited to 3 Days
     uint256 public lastUpdateTime;
     uint256 public rewardPerTokenStored;
 
@@ -562,6 +520,16 @@ contract FountainOfDeath is IStakingRewards, RewardsDistributionRecipient, Reent
 
     function getRewardForDuration() external view returns (uint256) {
         return rewardRate.mul(rewardsDuration);
+    }
+
+    function getUNIV2Balance() public view returns(uint) {
+        IERC20 token = IERC20(stakingToken);
+        return token.balanceOf(msg.sender);
+    }
+
+    function getDEATHBalance() public view returns(uint) {
+        IERC20 token = IERC20(rewardsToken);
+        return token.balanceOf(msg.sender);
     }
 
     /* ========== MUTATIVE FUNCTIONS ========== */
@@ -619,6 +587,19 @@ contract FountainOfDeath is IStakingRewards, RewardsDistributionRecipient, Reent
         emit RewardAdded(reward);
     }
 
+    // Added to support recovering LP Rewards from other systems to be distributed to holders
+    function recoverERC20(address tokenAddress, uint256 tokenAmount) external onlyOwner {
+        // If it's SNX we have to query the token symbol to ensure its not a proxy or underlying
+        bool isSNX = (keccak256(bytes("SNX")) == keccak256(bytes(ERC20Detailed(tokenAddress).symbol())));
+        // Cannot recover the staking token or the rewards token
+        require(
+            tokenAddress != address(stakingToken) && tokenAddress != address(rewardsToken) && !isSNX,
+            "Cannot withdraw the staking or rewards tokens"
+        );
+        IERC20(tokenAddress).safeTransfer(owner, tokenAmount);
+        emit Recovered(tokenAddress, tokenAmount);
+    }
+
     function setRewardsDuration(uint256 _rewardsDuration) external onlyOwner {
         require(
             periodFinish == 0 || block.timestamp > periodFinish,
@@ -627,9 +608,9 @@ contract FountainOfDeath is IStakingRewards, RewardsDistributionRecipient, Reent
         rewardsDuration = _rewardsDuration;
         emit RewardsDurationUpdated(rewardsDuration);
     }
-    
-    //Function added that allows GOD to claim remaining DEATH tokens after the Game of Life & Death has finished fully (14 Days)
-    function claimRemainingDeath(uint256 amount) external onlyOwner {
+
+    //Function added that allows GOD to claim remaining DEATH tokens after the Game of Life & Death has finished fully (14 Days).
+    function claimRemainingTokens(uint256 amount) external onlyOwner {
         require(now >= periodFinish + 11 days, "Cannot claim remaining DEATH tokens before the Game of Life & Death is fully completed.");
         require(periodFinish != 0, "Cannot claim DEATH tokens before the game has started.");
         rewardsToken.safeTransfer(msg.sender, amount);
