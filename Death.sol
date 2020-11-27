@@ -363,7 +363,7 @@ library SafeERC20 {
     }
 }
 
-contract LifeToken is ERC20, ERC20Detailed {
+contract DeathToken is ERC20, ERC20Detailed {
   using SafeERC20 for IERC20;
   using Address for address;
   using SafeMath for uint;
